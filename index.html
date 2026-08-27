@@ -19,7 +19,7 @@
     --radius: 10px;
   }
   *{box-sizing:border-box;}
-  html,body{margin:0;padding:0;}
+  html,body{margin:0;padding:0; max-width:100%; overflow-x:hidden;}
   body{
     background:
       radial-gradient(circle at 15% -10%, rgba(143,191,92,0.06), transparent 40%),
@@ -37,19 +37,21 @@
 
   .topbar{
     display:flex; align-items:center; justify-content:space-between;
+    flex-wrap:wrap; gap:12px;
     padding:16px 24px; border-bottom:1px solid var(--line);
     background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
   }
-  .brand{display:flex; align-items:center; gap:12px;}
+  .brand{display:flex; align-items:center; gap:12px; min-width:0;}
   .brand-mark{
     width:34px; height:34px; border-radius:50%;
     background:conic-gradient(from 200deg, var(--good), var(--amber), var(--bad), var(--good));
     box-shadow: inset 0 0 0 3px var(--bg), 0 0 0 1px var(--line);
   }
-  .brand-text .eyebrow{font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted);}
-  .brand-text h1{font-size:20px; font-weight:600;}
+  .brand-text{min-width:0;}
+  .brand-text .eyebrow{font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .brand-text h1{font-size:20px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
 
-  .conn-group{display:flex; align-items:center; gap:12px;}
+  .conn-group{display:flex; align-items:center; gap:12px; flex-wrap:wrap;}
   .status-pill{
     display:flex; align-items:center; gap:8px;
     font-size:13px; padding:6px 12px; border-radius:999px;
@@ -75,7 +77,9 @@
     display:grid; grid-template-columns: 320px 1fr; gap:20px;
     padding:24px; max-width:1360px; margin:0 auto;
   }
+  .layout > div{min-width:0;}
   @media (max-width: 880px){ .layout{grid-template-columns:1fr;} }
+  @media (max-width: 600px){ .layout{padding:14px; gap:14px;} }
 
   .panel{
     background:var(--panel); border:1px solid var(--line); border-radius:var(--radius);
@@ -92,6 +96,7 @@
   }
   .field-row{display:flex; gap:8px;}
   .field-row .btn{flex-shrink:0;}
+  .field-row input[type=text]{min-width:0;}
 
   input[type=range]{width:100%; accent-color:var(--amber);}
   .slider-value{font-size:12px; color:var(--amber);}
@@ -103,9 +108,11 @@
 
   /* --- Live readout / dial (signature element) --- */
   .readout-grid{display:grid; grid-template-columns: 220px 1fr; gap:28px; align-items:center;}
+  .readout-grid > *{min-width:0;}
   @media (max-width:640px){ .readout-grid{grid-template-columns:1fr;} }
 
-  .dial-wrap{display:flex; flex-direction:column; align-items:center; gap:10px;}
+  .dial-wrap{display:flex; flex-direction:column; align-items:center; gap:10px; min-width:0; width:100%;}
+  .dial-wrap svg{max-width:220px; width:100%; height:auto; display:block;}
   .decision-tag{
     font-family:'Space Grotesk',sans-serif; font-size:22px; font-weight:700; letter-spacing:.02em;
     padding:6px 18px; border-radius:999px; border:1px solid var(--line); color:var(--muted);
@@ -158,10 +165,41 @@
     background:rgba(217,100,58,0.08); border:1px solid rgba(217,100,58,0.4); color:#F0B69C;
     border-radius:8px; padding:10px 14px; font-size:12.5px; margin:0 24px 0 24px;
   }
-  .config-warning code{background:rgba(0,0,0,0.25); padding:1px 5px; border-radius:4px;}
+  .config-warning code{background:rgba(0,0,0,0.25); padding:1px 5px; border-radius:4px; word-break:break-word;}
 
   @media (prefers-reduced-motion: reduce){
     *{transition:none !important;}
+  }
+
+  /* ---------------- Responsive tweaks ---------------- */
+  @media (max-width: 600px){
+    .topbar{padding:12px 16px;}
+    .brand-text h1{font-size:17px;}
+    .brand-text .eyebrow{font-size:10px;}
+    .brand-mark{width:28px; height:28px;}
+    .conn-group{width:100%; justify-content:space-between;}
+    .status-pill{font-size:12px; padding:5px 10px;}
+    button.btn{padding:8px 12px; font-size:13px;}
+    .config-warning{margin:0 14px;}
+    .panel{padding:14px;}
+    .action-grid{grid-template-columns:1fr 1fr; gap:6px;}
+    .metrics-row{gap:14px;}
+    .metric .value{font-size:22px;}
+    .prob-row{grid-template-columns:96px 1fr 38px; gap:6px; font-size:12px;}
+    .history-header{flex-wrap:wrap; gap:8px;}
+    .history-header > div{width:100%; justify-content:flex-end;}
+    table{min-width:560px;}
+    .log-console{height:120px;}
+  }
+
+  @media (max-width: 420px){
+    .conn-group{flex-direction:column; align-items:stretch; gap:8px;}
+    .conn-group button.btn, .status-pill{width:100%; justify-content:center;}
+    .action-grid{grid-template-columns:1fr;}
+    .action-grid #armFullBtn{grid-column:auto;}
+    .field-row{flex-wrap:wrap;}
+    .field-row input[type=text]{width:100%;}
+    .field-row .btn{flex:1;}
   }
 </style>
 </head>
@@ -172,8 +210,7 @@
     <div class="brand-mark" aria-hidden="true"></div>
     <div class="brand-text">
       <div class="eyebrow">ESP32 &middot; Piezo Tap Sensor</div>
-      <h1>Fruty Pi</h1>
-      
+      <h1>Tap &amp; Tell Console</h1>
     </div>
   </div>
   <div class="conn-group">
@@ -183,16 +220,15 @@
   </div>
 </div>
 
-<!-- <div class="config-warning" id="uuidWarning">
+<div class="config-warning" id="uuidWarning">
   ⚠ Using placeholder Bluetooth UUIDs. Open <code>bt_manager.h</code> from your ESP32 project and paste the real
   <code>SERVICE_UUID</code>, <code>CHAR_SCAN_CONFIG_UUID</code>, and <code>CHAR_SCAN_RESULTS_UUID</code> values into the
   constants at the top of the <code>&lt;script&gt;</code> block in this file — search for <code>TODO_REPLACE</code>.
-</div> -->
+</div>
 
 <div class="layout">
-  
-  <!-- LEFT: CONTROLS -->
 
+  <!-- LEFT: CONTROLS -->
   <div>
     <div class="panel">
       <h2>Model &amp; fruit</h2>
@@ -223,7 +259,7 @@
       <div class="action-grid">
         <button class="btn" id="captureBtn">Capture image</button>
         <button class="btn" id="acousticBtn">Arm acoustic</button>
-        <button class="btn primary" id="armFullBtn" style="grid-column:1/3;">Run inference scan</button>
+        <button class="btn primary" id="armFullBtn" style="grid-column:1/3;">Arm full scan (image + tap)</button>
       </div>
       <button class="btn danger" id="cancelBtn" style="width:100%; margin-top:6px;">Cancel scan</button>
     </div>
@@ -271,11 +307,11 @@
       <div class="history-header">
         <h2 style="margin:0;">Scan history</h2>
         <div style="display:flex; gap:8px;">
-          <button class="btn" id="exportCsvBtn">Export CSV file</button>
+          <button class="btn" id="exportCsvBtn">Export CSV</button>
           <button class="btn danger" id="clearHistoryBtn">Clear</button>
         </div>
       </div>
-      <div style="max-height:340px; overflow-y:auto;">
+      <div style="max-height:340px; overflow-y:auto; overflow-x:auto;">
         <table>
           <thead>
             <tr><th>Time</th><th>Fruit</th><th>Decision</th><th>Ripeness</th><th>Confidence</th><th>Entropy</th><th>Anomaly</th></tr>
@@ -593,7 +629,7 @@ $("deleteModelBtn").addEventListener("click", () => {
 
 $("captureBtn").addEventListener("click", () => sendCommand({ command: "capture_image" }));
 $("acousticBtn").addEventListener("click", () => sendCommand({ command: "arm_acoustic" }));
-$("armFullBtn").addEventListener("click", () => sendCommand({ command: "inference_request" }));
+$("armFullBtn").addEventListener("click", () => sendCommand({ command: "arm_full" }));
 $("cancelBtn").addEventListener("click", () => sendCommand({ command: "cancel" }));
 
 $("modeInference").addEventListener("click", () => setMode("inference"));
